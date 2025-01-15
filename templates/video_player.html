@@ -7,29 +7,31 @@
 </head>
 <body>
     <h1>Video Player</h1>
-    <video id="videoPlayer" controls width="100%" height="auto">
-        <source src="{{ video_url }}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    {% if video_url %}
+        <video id="videoPlayer" controls autoplay width="640">
+            <source src="{{ video_url }}" type="video/mp4">
+            Seu navegador não suporta o elemento de vídeo ou o tipo de vídeo fornecido.
+        </video>
+        <script>
+            const video = document.getElementById('videoPlayer');
+            const savedTime = {{ saved_time|safe }};
+            
+            if (savedTime) {
+                video.currentTime = savedTime;  // Continua do ponto salvo
+            }
 
-    <script>
-        const video = document.getElementById('videoPlayer');
-        const savedTime = {{ saved_time }}; // Tempo salvo vindo do servidor
-
-        // Define o vídeo para começar de onde parou
-        video.currentTime = savedTime;
-
-        // Salva o tempo atual do vídeo a cada 5 segundos
-        setInterval(() => {
-            const currentTime = video.currentTime;
-            fetch('/save_time', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ time: currentTime })
-            }).catch(err => console.error('Failed to save time:', err));
-        }, 5000);
-    </script>
+            video.addEventListener('timeupdate', () => {
+                fetch('/save_time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ time: video.currentTime })
+                });
+            });
+        </script>
+    {% else %}
+        <p>Nenhum vídeo encontrado. Adicione o parâmetro <code>?url=SUA_URL</code> na URL.</p>
+    {% endif %}
 </body>
 </html>
