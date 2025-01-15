@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+</head>
+<body>
+    <h1>Video Player</h1>
+    <video id="videoPlayer" controls width="100%" height="auto">
+        <source src="{{ video_url }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <script>
+        const video = document.getElementById('videoPlayer');
+        const savedTime = {{ saved_time }}; // Tempo salvo vindo do servidor
+
+        // Define o vídeo para começar de onde parou
+        video.currentTime = savedTime;
+
+        // Salva o tempo atual do vídeo a cada 5 segundos
+        setInterval(() => {
+            const currentTime = video.currentTime;
+            fetch('/save_time', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ time: currentTime })
+            }).catch(err => console.error('Failed to save time:', err));
+        }, 5000);
+    </script>
+</body>
+</html>
