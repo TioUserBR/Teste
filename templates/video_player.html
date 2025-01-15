@@ -8,8 +8,8 @@
 <body>
     <h1>Video Player</h1>
     {% if video_url %}
-        <video id="videoPlayer" controls autoplay width="640">
-            <source src="{{ video_url }}" type="video/mp4">
+        <video id="videoPlayer" controls autoplay width="640" onerror="console.error('Erro ao carregar o vídeo');">
+            <source src="{{ video_url }}" type="video/mp4" onerror="console.error('Erro ao carregar o arquivo de vídeo');">
             Seu navegador não suporta o elemento de vídeo ou o tipo de vídeo fornecido.
         </video>
         <script>
@@ -28,6 +28,10 @@
                     },
                     body: JSON.stringify({ time: video.currentTime })
                 });
+            });
+
+            video.addEventListener('error', (e) => {
+                console.error('Erro ao carregar o vídeo:', e);
             });
         </script>
     {% else %}
