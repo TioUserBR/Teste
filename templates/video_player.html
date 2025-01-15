@@ -7,19 +7,23 @@
 </head>
 <body>
     <h1>Video Player</h1>
+    
     {% if video_url %}
-        <video id="videoPlayer" controls autoplay width="640" onerror="console.error('Erro ao carregar o vídeo');">
-            <source src="{{ video_url }}" type="video/mp4" onerror="console.error('Erro ao carregar o arquivo de vídeo');">
+        <video id="videoPlayer" controls autoplay width="640">
+            <source src="{{ video_url }}" type="video/mp4">
             Seu navegador não suporta o elemento de vídeo ou o tipo de vídeo fornecido.
         </video>
+        
         <script>
             const video = document.getElementById('videoPlayer');
             const savedTime = {{ saved_time|safe }};
             
-            if (savedTime) {
-                video.currentTime = savedTime;  // Continua do ponto salvo
+            // Continuar do tempo salvo
+            if (savedTime && !isNaN(savedTime)) {
+                video.currentTime = savedTime;  
             }
 
+            // Salvar tempo atual do vídeo periodicamente
             video.addEventListener('timeupdate', () => {
                 fetch('/save_time', {
                     method: 'POST',
